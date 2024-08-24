@@ -1,0 +1,52 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class PlayerController3D : MonoBehaviour
+{
+    public float moveSpeed = 5f; // Скорость движения игрока
+    public float jumpForce = 5f; // Сила прыжка
+
+    private Rigidbody rb; // Ссылка на Rigidbody
+    private bool isGrounded; // Проверка на земле ли игрок
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void Update()
+    {
+        // Движение игрока вперед
+        rb.velocity = new Vector3(-moveSpeed, rb.velocity.y, 0);
+
+        // Прыжок при нажатии пробела
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Проверка на столкновение с землей для прыжка
+        if (collision.gameObject.tag == "Ground")
+        {
+            isGrounded = true;
+        }
+
+        // Проверка на столкновение со стеной
+        if (collision.gameObject.tag == "Wall")
+        {
+            SceneManager.LoadScene("Level2"); // Переход на второй уровень
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        // Когда игрок покидает поверхность, больше не считается на земле
+        if (collision.gameObject.tag == "Ground")
+        {
+            isGrounded = false;
+        }
+    }
+}
